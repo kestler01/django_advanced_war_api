@@ -16,7 +16,7 @@ class Game(models.Model):
       related_name= 'games',
       on_delete=models.CASCADE
   )
-  turn = models.BooleanField(default=0)
+  turn = models.IntegerField(default=0)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   # could i make a one to many game to cells relationship ?

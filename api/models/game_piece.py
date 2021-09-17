@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models.fields import IntegerField
+# from django.db.models.fields import IntegerField
 from .game import Game
 # Create your models here.
 # Vague starter piece to build the others off of. Also proof of concept.
-class Game_piece(models.Model):
+class Game_Piece(models.Model):
     # define fields
     # https://docs.djangoproject.com/en/3.0/ref/models/fields/
     name = models.CharField(max_length=100)
@@ -19,8 +19,8 @@ class Game_piece(models.Model):
         on_delete=models.CASCADE
     )
     # correspond to game grid cells. currently playing on 7 by 7 board
-    position_x = IntegerField()
-    position_y = IntegerField()
+    position_x = models.IntegerField()
+    position_y = models.IntegerField()
     # movement points ? ( or should this class just be a parent class to write all the other ones from )
 
     def move(self, new_x, new_y):  # new_x/y are ints

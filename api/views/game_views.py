@@ -5,8 +5,8 @@ from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 
 from ..models.game import Game
-from ..serializers import GameSerializer, NewGameSerializer
-
+from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer
+from ..models.game_piece import Game_Piece
   #  'id': self.id,
   #  'name': self.name,
   #  'is_started': self.is_started,
@@ -19,8 +19,8 @@ class GamesView(generics.ListCreateAPIView):
     # get all users games, will have to be edited in V2
     def get(self, request):
         """Index request"""
-        mangos = Game.objects.filter(owner=request.user)
-        data = GameSerializer(mangos, many=True).data
+        games = Game.objects.filter(owner=request.user)
+        data = GameSerializer(games, many=True).data
         return Response({'game': data})
 
     # post to create a game
@@ -70,29 +70,33 @@ class GameDetailView(generics.RetrieveUpdateDestroyAPIView):
         # If the data is not valid, return a response with the errors
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# more specific view to crud pieces
-class GamesView(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated,)
-  # start doing my verbs
-    # get all users games, will have to be edited in V2
-
-    def get(self, request):
-        """Index request"""
-        mangos = Game.objects.filter(owner=request.user)
-        data = GameSerializer(mangos, many=True).data
-        return Response({'game': data})
-
-    # post to create a game
-    def post(self, request):
-        """Create request"""
-        request.data['game']['owner'] = request.user.id
-        game = GameSerializer(data=request.data['game'])
-        if game.is_valid():
-            game.save()
-            return Response({'game': game.data}, status=status.HTTP_201_CREATED)
-        return Response(game.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # then reintroduce pieces
+
+
+class PiecesView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        """Index request"""
+        # get the piece objects, and filter so we get the ones that belong to this game
+        pieces = Game_Piece.objects.filter(game=pk)
+        data = PieceSerializer(pieces, many=True).data
+        return Response({'game_pieces': data})
+
+    # post to create a piece
+    def post(self, request, pk):
+        """Create request"""
+        request.data['piece']['owner'] = request.user.id
+        request.data['piece']['game'] = pk
+        print(request.data)
+        # do i have to do a Game.objects.get(id=pk) to establish this relationship ?
+        piece = PieceSerializer(data=request.data['piece'])
+        if piece.is_valid():
+            piece.save()
+            return Response({'piece': piece.data}, status=status.HTTP_201_CREATED)
+        return Response(piece.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # AS NESTED RELATIONSHIPS ?!
 class NewGameView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
