@@ -3,11 +3,94 @@ from rest_framework import serializers
 
 from .models.mango import Mango
 from .models.user import User
+from .models.game import Game
+from .models.game_piece import Game_piece
 
 class MangoSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
     class Meta:
         model = Mango
         fields = ('id', 'name', 'color', 'ripe', 'owner')
+
+# wondering if the order here matters, i do have them pointing at each other ...
+class PieceSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    # game = serializers.StringRelatedFields() # will return string representation
+    # likely unnecessary as the game serializer will print this too
+
+    class Meta:
+        model = Game_piece
+        # id name, game, position_x & y
+        fields = ('id', 'name', 'game', 'position_x', 'position_y')
+
+class GameSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    pieces = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = Game
+        # id name, is_over, is_started, owner,
+        fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at', 'pieces')
+
+class NewGameSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    pieces = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Game
+        # id name, is_over, is_started, owner,
+        fields = ('id', 'name', 'is_over', 'is_started', 'owner',
+                  'turn', 'updated_at', 'created_at', 'pieces')
+    # this is a writable custom method so we can set up the game with pieces on create
+    # assuming it is set up correctly
+
+    def create(self, validated_data):
+      pieces_data = validated_data.pop('pieces')
+      game = Game.objects.create(**validated_data)
+      for piece_data in pieces_data:  # requests will have to use piece_data
+          Game_piece.objects.create(game=game, owner=game.owner, **piece_data)
+      return game
+
+
+# /////////////////////////////////////////////////////////////////////////////////////////
+# From https://www.django-rest-framework.org/api-guide/relations/
+# Writtable nested relationships example
+# By default nested serializers are read-only. If you want to support write-operations to a
+# nested serializer field you'll need to create create() and/or update() methods in order
+# to explicitly specify how the child relationships should be saved:
+#   class TrackSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Track
+#         fields = ['order', 'title', 'duration']
+
+# class AlbumSerializer(serializers.ModelSerializer):
+#     tracks = TrackSerializer(many=True)
+
+#     class Meta:
+#         model = Album
+#         fields = ['album_name', 'artist', 'tracks']
+
+#     def create(self, validated_data):
+#         tracks_data = validated_data.pop('tracks')
+#         album = Album.objects.create(**validated_data)
+#         for track_data in tracks_data:
+#             Track.objects.create(album=album, **track_data)
+#         return album
+
+
+# >> > data = {
+#     'album_name': 'The Grey Album',
+#     'artist': 'Danger Mouse',
+#     'tracks': [
+#         {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+#         {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+#         {'order': 3, 'title': 'Encore', 'duration': 159},
+#     ],
+# }
+# >> > serializer = AlbumSerializer(data=data)
+# >> > serializer.is_valid()
+# True
+# >> > serializer.save()
+# ////////////////////////////////////////////////////////////////////////////////////////
 
 class UserSerializer(serializers.ModelSerializer):
     # This model serializer will be used for User creation

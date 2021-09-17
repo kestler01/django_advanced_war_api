@@ -96,3 +96,17 @@ class ChangePassword(generics.UpdateAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# this view is more a test to see how far down we can see it's relationships
+# class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     def get(self, request, pk):
+#         """Show request"""
+#         # Locate the mango to show
+#         user = get_object_or_404(User, pk=pk)
+#         # # Only want to show your own profile?
+#         # if request.user != mango.owner:
+#         #     raise PermissionDenied('Unauthorized, you do not own this mango')
+
+#         # Run the data through the serializer so it's formatted
+#         data = UserSerializer(user).data
+#         return Response({'user': data})

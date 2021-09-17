@@ -25,3 +25,5 @@ class Mango(models.Model):
         'ripe': self.ripe,
         'color': self.color
     }
+  def throw(self):
+    return (f"the mango name'{self.name} goes *splat*", self.delete())

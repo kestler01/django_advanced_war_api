@@ -65,6 +65,8 @@ SECRET_KEY = os.getenv('SECRET')
 INSTALLED_APPS = [
     # Our custom apps
     'api',
+    #DRF extra multi model goodness, docs @ https://github.com/MattBroach/DjangoRestMultipleModels
+    'drf_multiple_model',
     # DRF
     'rest_framework',
     'rest_framework.authtoken',
