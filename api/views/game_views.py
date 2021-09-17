@@ -93,6 +93,7 @@ class PiecesView(generics.ListCreateAPIView):
         piece = PieceSerializer(data=request.data['piece'])
         if piece.is_valid():
             piece.save()
+            print(piece.data)
             return Response({'piece': piece.data}, status=status.HTTP_201_CREATED)
         return Response(piece.errors, status=status.HTTP_400_BAD_REQUEST)
 
