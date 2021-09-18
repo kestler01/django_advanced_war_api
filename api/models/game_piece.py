@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from .game import Game
 # Create your models here.
 # Vague starter piece to build the others off of. Also proof of concept.
-class Game_Piece(models.Model):
+class GamePiece(models.Model):
     # define fields
     # https://docs.djangoproject.com/en/3.0/ref/models/fields/
     name = models.CharField(max_length=100)
@@ -15,7 +15,7 @@ class Game_Piece(models.Model):
     )
     game = models.ForeignKey(
         Game,
-        related_name= 'game_pieces',
+        related_name='game_pieces',
         on_delete=models.CASCADE
     )
     # correspond to game grid cells. currently playing on 7 by 7 board
@@ -23,28 +23,28 @@ class Game_Piece(models.Model):
     position_y = models.IntegerField()
     # movement points ? ( or should this class just be a parent class to write all the other ones from )
 
-    def move(self, new_x, new_y):  # new_x/y are ints
-        # method to reassign position, logic checks to be done elsewhere
-        self.position_x = new_x
-        self.position_y = new_y
-        # don't forget to save the changes!
-        self.save()
-        return (self.position_x, self.position_y)
+    # def move(self, new_x, new_y):  # new_x/y are ints
+    #     # method to reassign position, logic checks to be done elsewhere
+    #     self.position_x = new_x
+    #     self.position_y = new_y
+    #     # don't forget to save the changes!
+    #     self.save()
+    #     return (self.position_x, self.position_y)
 
     def __str__(self):
         """Return string representation of the piece"""
-        return ( f" {self.owner}s {self.name} piece, in {self.game}game, is at ({self.position_x},{self.position_y}")
+        return ( f"Piece= owner: {self.owner} type: {self.name} game: {self.game}game, position x,y: ({self.position_x},{self.position_y})")
 
-    def __dict__(self):
-        return {
-            'id':self.id,
-            'game': self.game,
-            'name' : self.name,
-            'owner' : self.owner,
-            'position_x' : self.position_x,
-            'position_y' : self.position_y,
-        }
-# class Marine(Game_piece):
+#     def __dict__(self):
+#         return {
+#             'id':self.id,
+#             'game': self.game,
+#             'name' : self.name,
+#             'owner' : self.owner,
+#             'position_x' : self.position_x,
+#             'position_y' : self.position_y,
+#         }
+# # class Marine(Game_piece):
 #     name= 'marine'
 
 # class Soldier(Game_piece):
