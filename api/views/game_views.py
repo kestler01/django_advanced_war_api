@@ -21,7 +21,7 @@ class GamesView(generics.ListCreateAPIView):
         """Index request"""
         games = Game.objects.filter(owner=request.user)
         data = GameSerializer(games, many=True).data
-        return Response({'game': data})
+        return Response({'games': data})
 
     # post to create a game
     def post(self, request):
@@ -142,7 +142,7 @@ class PieceDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         # If the data is not valid, return a response with the errors
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    # currently does NOT update the game pieces if you change them in this request
 
 # AS NESTED RELATIONSHIPS ?! requires a re-write of piece to not have the game referenced
 # class NewGameView(generics.ListCreateAPIView):

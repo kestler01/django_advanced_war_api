@@ -1,16 +1,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models.mango import Mango
+
 from .models.user import User
 from .models.game import Game
 from .models.game_piece import GamePiece
-
-class MangoSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    class Meta:
-        model = Mango
-        fields = ('id', 'name', 'color', 'ripe', 'owner')
 
 # wondering if the order here matters, i do have them pointing at each other ...
 class PieceSerializer(serializers.ModelSerializer):
@@ -43,7 +37,7 @@ class GameSerializer(serializers.ModelSerializer):
 
 class ShowGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
-    game_pieces = serializers.StringRelatedField(many=True) # currently getting __str__
+    game_pieces = PieceSerializer (many=True)
     class Meta:
         model = Game
         # id name, is_over, is_started, owner, ...
