@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models.mango import Mango
+
 from .models.user import User
 from .models.game import Game
 from .models.game_piece import GamePiece
@@ -11,6 +11,7 @@ class MangoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mango
         fields = ('id', 'name', 'color', 'ripe', 'owner')
+
 
 # wondering if the order here matters, i do have them pointing at each other ...
 class PieceSerializer(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class PieceSerializer(serializers.ModelSerializer):
 class ShowPieceSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     game = serializers.StringRelatedField()  # will return string representation
+
     # likely unnecessary as the game serializer will print this too
 
     class Meta:
@@ -35,7 +37,9 @@ class ShowPieceSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner', )
 
 class GameSerializer(serializers.ModelSerializer):
-    # owner = serializers.StringRelatedField()
+
+    # owner = serializers.StringRelatedField() BREAKS CREATE GAME
+
     # pieces = serializers.StringRelatedField(many=True)
     class Meta:
         model = Game
@@ -44,6 +48,7 @@ class GameSerializer(serializers.ModelSerializer):
 
 class ShowGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
+
     game_pieces = PieceSerializer(many=True)
     class Meta:
         model = Game
@@ -79,7 +84,7 @@ class ShowGameSerializer(serializers.ModelSerializer):
 #   class TrackSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Track
-#         fields = ['order', 'title', 'duration']
+#         fields = ['order', 'title', 'duration']   NO ALBUM!
 
 # class AlbumSerializer(serializers.ModelSerializer):
 #     tracks = TrackSerializer(many=True)

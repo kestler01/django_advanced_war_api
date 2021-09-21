@@ -15,7 +15,7 @@ class GamePiece(models.Model):
     )
     game = models.ForeignKey(
         Game,
-        related_name= 'game_pieces',
+        related_name='game_pieces',
         on_delete=models.CASCADE
     )
     # correspond to game grid cells. currently playing on 7 by 7 board
@@ -45,6 +45,7 @@ class GamePiece(models.Model):
     #         'position_y' : self.position_y,
     #     }
 # class Marine(Game_piece):
+
 #     name= 'marine'
 
 # class Soldier(Game_piece):
