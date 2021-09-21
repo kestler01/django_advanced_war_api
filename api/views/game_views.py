@@ -5,8 +5,8 @@ from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 
 from ..models.game import Game
-from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer
-from ..models.game_piece import Game_Piece
+from ..serializers import GameSerializer, PieceSerializer, ShowPieceSerializer, ShowGameSerializer
+from ..models.game_piece import GamePiece
   #  'id': self.id,
   #  'name': self.name,
   #  'is_started': self.is_started,
@@ -26,7 +26,9 @@ class GamesView(generics.ListCreateAPIView):
     # post to create a game
     def post(self, request):
         """Create request"""
+        print("in post @ game_views", request.data, request.user.id)
         request.data['game']['owner'] = request.user.id
+        print(" PRINT AFTER INPOST: LOOKING FOR GAME.OWNER", request.data['game'])
         game = GameSerializer(data=request.data['game'])
         if game.is_valid():
             game.save()
@@ -43,7 +45,7 @@ class GameDetailView(generics.RetrieveUpdateDestroyAPIView):
         # this logic will have to be changed to support more than 1 player in V2
         if request.user != game.owner:
             raise PermissionDenied('Unauthorized, you do not own this game instance')
-        data = GameSerializer(game).data
+        data = ShowGameSerializer(game).data
         return Response({'game': data})
 
     # delete the game
@@ -79,7 +81,7 @@ class PiecesView(generics.ListCreateAPIView):
     def get(self, request, pk):
         """Index request"""
         # get the piece objects, and filter so we get the ones that belong to this game
-        pieces = Game_Piece.objects.filter(game=pk)
+        pieces = GamePiece.objects.filter(game=pk)
         data = PieceSerializer(pieces, many=True).data
         return Response({'game_pieces': data})
 
@@ -98,24 +100,68 @@ class PiecesView(generics.ListCreateAPIView):
         return Response(piece.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# AS NESTED RELATIONSHIPS ?!
-class NewGameView(generics.ListCreateAPIView):
+class PieceDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
+    # get the one piece
 
-    def get(self, request):
-        """Index request"""
-        mangos = Game.objects.filter(owner=request.user)
-        data = GameSerializer(mangos, many=True).data
-        return Response({'game': data})
+    def get(self, request, id, *args, **kwargs):
+        """Show request"""
+        piece = get_object_or_404(GamePiece, pk=id)
+        # this logic will have to be changed to support more than 1 player in V2
+        if request.user != piece.owner:
+            raise PermissionDenied(
+                'Unauthorized, you do not own this piece instance')
+        data = ShowPieceSerializer(piece).data
+        return Response({'piece': data})
 
-    def post(self, request):
-        """Create request"""
-        request.data['game']['owner'] = request.user.id
-        game = NewGameSerializer(data=request.data['game'])
-        if game.is_valid():
-            game.save()
-            return Response({ 'game': game.data }, status=status.HTTP_201_CREATED)
-        return Response(game.errors, status=status.HTTP_400_BAD_REQUEST)
+    # delete the piece
+    def delete(self, request, id, *args, **kwargs):
+        """Delete request"""
+        piece = get_object_or_404(GamePiece, pk=id)
+        # this logic will have to be changed to support more than 1 player in V2
+        if request.user != piece.owner:
+            raise PermissionDenied(
+                'Unauthorized, you do not own this piece instance')
+        piece.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # V1, update position_x and y fields
+    def partial_update(self, request, id, *args, **kwargs):
+        """Update Request"""
+        piece = get_object_or_404(GamePiece, pk=id)
+        # this logic will have to be changed to support more than 1 player in V2
+        if request.user != piece.owner:  # maybe .player
+            raise PermissionDenied(
+                'Unauthorized, you do not own this pieceinstance')
+        request.data['piece']['owner'] = request.user.id
+        data = ShowPieceSerializer(
+            piece, data=request.data['piece'], partial=True)
+        if data.is_valid():
+            # Save & send a 204 no content
+            data.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # If the data is not valid, return a response with the errors
+        return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+    # currently does NOT update the game pieces if you change them in this request
+
+# AS NESTED RELATIONSHIPS ?!
+# class NewGameView(generics.ListCreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+
+#     def get(self, request):
+#         """Index request"""
+#         mangos = Game.objects.filter(owner=request.user)
+#         data = GameSerializer(mangos, many=True).data
+#         return Response({'game': data})
+
+#     def post(self, request):
+#         """Create request"""
+#         request.data['game']['owner'] = request.user.id
+#         game = NewGameSerializer(data=request.data['game'])
+#         if game.is_valid():
+#             game.save()
+#             return Response({ 'game': game.data }, status=status.HTTP_201_CREATED)
+#         return Response(game.errors, status=status.HTTP_400_BAD_REQUEST)
     # then add list of pieces to the game model.
     # patch the game to add and remove pieces.
       # i believe puttin gth object literals in the list is ok* look into this

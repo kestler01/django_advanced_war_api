@@ -4,7 +4,7 @@ from rest_framework import serializers
 from .models.mango import Mango
 from .models.user import User
 from .models.game import Game
-from .models.game_piece import Game_Piece
+from .models.game_piece import GamePiece
 
 class MangoSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
@@ -19,36 +19,55 @@ class PieceSerializer(serializers.ModelSerializer):
     # likely unnecessary as the game serializer will print this too
 
     class Meta:
-        model = Game_Piece
+        model = GamePiece
+        # id name, game, position_x & y
+        fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner', )
+
+
+class ShowPieceSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    game = serializers.StringRelatedField()  # will return string representation
+    # likely unnecessary as the game serializer will print this too
+
+    class Meta:
+        model = GamePiece
         # id name, game, position_x & y
         fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner', )
 
 class GameSerializer(serializers.ModelSerializer):
-    owner = serializers.StringRelatedField()
+    # owner = serializers.StringRelatedField()
     # pieces = serializers.StringRelatedField(many=True)
     class Meta:
         model = Game
         # id name, is_over, is_started, owner,
         fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at', ) # 'pieces taken out
 
-class NewGameSerializer(serializers.ModelSerializer):
+class ShowGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
-    pieces = PieceSerializer(many=True)
-
+    game_pieces = PieceSerializer(many=True)
     class Meta:
         model = Game
         # id name, is_over, is_started, owner,
-        fields = ('id', 'name', 'is_over', 'is_started', 'owner',
-                  'turn', 'updated_at', 'created_at', 'pieces')
-    # this is a writable custom method so we can set up the game with pieces on create
-    # assuming it is set up correctly
+        fields = ('id', 'name', 'is_over', 'is_started',
+                  'owner', 'turn', 'updated_at', 'created_at', 'game_pieces' )
+# class NewGameSerializer(serializers.ModelSerializer):
+#     owner = serializers.StringRelatedField()
+#     pieces = PieceSerializer(many=True)
 
-    def create(self, validated_data):
-      pieces_data = validated_data.pop('pieces')
-      game = Game.objects.create(**validated_data)
-      for piece_data in pieces_data:  # requests will have to use piece_data
-          Game_Piece.objects.create(game=game, owner=game.owner, **piece_data)
-      return game
+#     class Meta:
+#         model = Game
+#         # id name, is_over, is_started, owner,
+#         fields = ('id', 'name', 'is_over', 'is_started', 'owner',
+#                   'turn', 'updated_at', 'created_at', 'pieces')
+#     # this is a writable custom method so we can set up the game with pieces on create
+#     # assuming it is set up correctly
+
+#     def create(self, validated_data):
+#       pieces_data = validated_data.pop('pieces')
+#       game = Game.objects.create(**validated_data)
+#       for piece_data in pieces_data:  # requests will have to use piece_data
+#           Game_Piece.objects.create(game=game, owner=game.owner, **piece_data)
+#       return game
 
 
 # /////////////////////////////////////////////////////////////////////////////////////////

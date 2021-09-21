@@ -72,7 +72,7 @@ class Game(models.Model):
     return f"This game instance is named{self.name}, id:{self.id} and is owned by{self.owner}"
 
   def as_dict(self):
-    """Returns dictionary version of Mango models"""
+    """Returns dictionary version of Game models"""
     return {
         'id': self.id,
         'name': self.name,
