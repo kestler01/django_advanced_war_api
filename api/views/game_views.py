@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -23,10 +24,14 @@ class GamesView(generics.ListCreateAPIView):
         data = GameSerializer(games, many=True).data
         return Response({'game': data})
 
+
     # post to create a game
     def post(self, request):
         """Create request"""
+        print("PRINTS in create request view:",request.data)
         request.data['game']['owner'] = request.user.id
+        print("PRINTS in create request view AFTER REASSIGNING owner:", request.data)
+        print( get_user_model() )
         game = GameSerializer(data=request.data['game'])
         if game.is_valid():
             game.save()

@@ -21,15 +21,13 @@ class PieceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game_Piece
         # id name, game, position_x & y
-        fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner', )
+        fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner')
 
 class GameSerializer(serializers.ModelSerializer):
-    owner = serializers.StringRelatedField()
-    # pieces = serializers.StringRelatedField(many=True)
+    # owner = serializers.StringRelatedField()
     class Meta:
         model = Game
-        # id name, is_over, is_started, owner,
-        fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at', ) # 'pieces taken out
+        fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at') # 'pieces taken out
 
 class NewGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
