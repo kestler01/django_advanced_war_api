@@ -7,7 +7,6 @@ from .models.game import Game
 from .models.game_piece import Game_Piece
 
 class MangoSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
     class Meta:
         model = Mango
         fields = ('id', 'name', 'color', 'ripe', 'owner')
@@ -16,7 +15,7 @@ class MangoSerializer(serializers.ModelSerializer):
 class PieceSerializer(serializers.ModelSerializer):
     # owner = serializers.StringRelatedField()
     # game = serializers.StringRelatedFields() # will return string representation
-    # likely unnecessary as the game serializer will print this too
+    # likely unnecessary as the game serializer will print this piece instance too
 
     class Meta:
         model = Game_Piece
@@ -24,7 +23,7 @@ class PieceSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner')
 
 class GameSerializer(serializers.ModelSerializer):
-    # owner = serializers.StringRelatedField()
+    # owner = serializers.StringRelatedField() breaks create game!!!!!!!!
     class Meta:
         model = Game
         fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at') # 'pieces taken out

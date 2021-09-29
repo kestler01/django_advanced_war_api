@@ -22,7 +22,7 @@ class GamesView(generics.ListCreateAPIView):
         """Index request"""
         games = Game.objects.filter(owner=request.user)
         data = GameSerializer(games, many=True).data
-        return Response({'game': data})
+        return Response({'games': data})
 
 
     # post to create a game
@@ -61,13 +61,16 @@ class GameDetailView(generics.RetrieveUpdateDestroyAPIView):
         game.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def partial_update(self, request, pk): # V1, update the is_started and is_over fields
+    def partial_update(self, request, pk): # V1, update the is_started and is_over fields request is coming in with key gameData, not game as expected
         """Update Request"""
         game = get_object_or_404(Game, pk=pk)
+        print("In partial update, the request looks like:", request)
+        print("In partial update, the request data looks like:", request.data)
+        print("In partial update, this is the target data this function wants to use", request.data['gameData'])
         if request.user != game.owner:
             raise PermissionDenied('Unauthorized, you do not own this game instance')
-        request.data['game']['owner'] = request.user.id # setting the user.id after checking that it matches si safer than removing the data for now, if it was an empty string for example, it Would rewrite the owner field
-        data = GameSerializer(game, data=request.data['game'], partial=True)
+        request.data['gameData']['owner'] = request.user.id # setting the user.id after checking that it matches si safer than removing the data for now, if it was an empty string for example, it Would rewrite the owner field
+        data = GameSerializer(game, data=request.data['gameData'], partial=True)
         if data.is_valid():
             # Save & send a 204 no content
             data.save()
