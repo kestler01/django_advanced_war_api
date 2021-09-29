@@ -6,7 +6,7 @@ from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 
 from ..models.game import Game
-from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer
+from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer, GameDetailsSerializer
 from ..models.game_piece import Game_Piece
   #  'id': self.id,
   #  'name': self.name,
@@ -48,7 +48,7 @@ class GameDetailView(generics.RetrieveUpdateDestroyAPIView):
         # this logic will have to be changed to support more than 1 player in V2
         if request.user != game.owner:
             raise PermissionDenied('Unauthorized, you do not own this game instance')
-        data = GameSerializer(game).data
+        data = GameDetailsSerializer(game).data
         return Response({'game': data})
 
     # delete the game

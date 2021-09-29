@@ -28,6 +28,14 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('id', 'name', 'is_over', 'is_started', 'owner', 'turn', 'updated_at', 'created_at') # 'pieces taken out
 
+class GameDetailsSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    game_pieces = PieceSerializer(many=True)
+    class Meta:
+        model = Game
+        fields = ('id', 'name', 'is_over', 'is_started',
+                  'owner', 'turn', 'updated_at', 'created_at', 'game_pieces')
+
 class NewGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     pieces = PieceSerializer(many=True)
