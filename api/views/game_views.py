@@ -6,7 +6,7 @@ from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 
 from ..models.game import Game
-from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer, GameDetailsSerializer
+from ..serializers import GameSerializer, NewGameSerializer, PieceSerializer, GameDetailsSerializer, ShowPieceSerializer
 from ..models.game_piece import Game_Piece
   #  'id': self.id,
   #  'name': self.name,
@@ -105,6 +105,50 @@ class PiecesView(generics.ListCreateAPIView):
             return Response({'piece': piece.data}, status=status.HTTP_201_CREATED)
         return Response(piece.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class PieceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    
+    # get the one piece
+    def get(self, request, id, *args, **kwargs):
+        """Show request"""
+        piece = get_object_or_404(Game_Piece, pk=id)
+        # this logic will have to be changed to support more than 1 player in V2
+        if request.user != piece.owner:
+            raise PermissionDenied(
+                'Unauthorized, you do not own this piece instance')
+        data = ShowPieceSerializer(piece).data
+        return Response({'piece': data})
+
+    # delete the piece
+    def delete(self, request, id, *args, **kwargs):
+        """Delete request"""
+        piece = get_object_or_404(Game_Piece, pk=id)
+        # this logic will have to be changed to support more than 1 player in V2
+        if request.user != piece.owner:
+            raise PermissionDenied(
+                'Unauthorized, you do not own this piece instance')
+        piece.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # V1, update position_x and y fields
+    def partial_update(self, request, id, *args, **kwargs):
+        """Update Request"""
+        piece = get_object_or_404(Game_Piece, pk=id)
+
+        if request.user != piece.owner:  # maybe .player
+            raise PermissionDenied(
+                'Unauthorized, you do not own this pieceinstance')
+        request.data['piece']['owner'] = request.user.id
+        data = ShowPieceSerializer(
+            piece, data=request.data['piece'], partial=True)
+
+        if data.is_valid():
+            # Save & send a 204 no content
+            data.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # If the data is not valid, return a response with the errors
+        return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # AS NESTED RELATIONSHIPS ?!
 class NewGameView(generics.ListCreateAPIView):

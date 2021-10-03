@@ -22,6 +22,18 @@ class PieceSerializer(serializers.ModelSerializer):
         # id name, game, position_x & y
         fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner')
 
+
+class ShowPieceSerializer(serializers.ModelSerializer):
+    owner = serializers.StringRelatedField()
+    # game = serializers.StringRelatedField()  # will return string representation
+
+    # likely unnecessary as the game serializer will print this too
+
+    class Meta:
+        model = Game_Piece
+        # id name, game, position_x & y
+        fields = ('id', 'name', 'game', 'position_x', 'position_y', 'owner', )
+
 class GameSerializer(serializers.ModelSerializer):
     # owner = serializers.StringRelatedField() breaks create game!!!!!!!!
     class Meta:
@@ -36,6 +48,7 @@ class GameDetailsSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'is_over', 'is_started',
                   'owner', 'turn', 'updated_at', 'created_at', 'game_pieces')
 
+# no tin active use this serializer and it's view are experiments that MAY allow for a multifunction route/ combining the pieces and game routes
 class NewGameSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     pieces = PieceSerializer(many=True)
