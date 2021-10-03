@@ -68,15 +68,15 @@ URI Pattern  |	Verb	Verb   | Description
 sign-out | delete | deletes user token
 change-pw | patch | takes old password an new one, checks data and stores new hashed password
 games | get | index games, currently only owned games
- | post | create a game, requires a name
+games | post | create a game, requires a name
 games/:id/ | get | get the one game and it's details
- | delete | delete the game, wil also delete it's pieces
- | patch | partial update of the game, will not change owner
+games/:id/ | delete | delete the game, wil also delete it's pieces
+games/:id/ | patch | partial update of the game, will not change owner
 games/:id/pieces | get | index the games pieces, data also included in previous view, but this doesn't return the games data
-| post | create a new piece
+games/:id/pieces | post | create a new piece
 games/:id/pieces/:id | get | get the one piece ans it's details
-| delete | delete the piece
-| patch | partial update of the piece
+games/:id/pieces/:id | delete | delete the piece
+games/:id/pieces/:id | patch | partial update of the piece
 
 ---
 <!-- 
