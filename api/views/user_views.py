@@ -9,6 +9,7 @@ from ..serializers import UserSerializer, UserRegisterSerializer,  ChangePasswor
 from ..models.user import User
 
 class SignUp(generics.CreateAPIView):
+    """ sign up view from template """
     # Override the authentication/permissions classes so this endpoint
     # is not authenticated & we don't need any permissions to access it.
     authentication_classes = ()
@@ -18,6 +19,7 @@ class SignUp(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
 
     def post(self, request):
+        """ sign up """
         # Pass the request data to the serializer to validate it
         user = UserRegisterSerializer(data=request.data['credentials'])
         # If that data is in the correct format...
@@ -35,6 +37,7 @@ class SignUp(generics.CreateAPIView):
             return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SignIn(generics.CreateAPIView):
+    """ sign in view from template"""
     # Override the authentication/permissions classes so this endpoint
     # is not authenticated & we don't need any permissions to access it.
     authentication_classes = ()
@@ -44,6 +47,7 @@ class SignIn(generics.CreateAPIView):
     serializer_class = UserSerializer
 
     def post(self, request):
+        """ sign in """
         creds = request.data['credentials']
         print(creds)
         # We can pass our email and password along with the request to the
@@ -70,7 +74,9 @@ class SignIn(generics.CreateAPIView):
             return Response({ 'msg': 'The username and/or password is incorrect.' }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 class SignOut(generics.DestroyAPIView):
+    """ sign out vew from template"""
     def delete(self, request):
+        """ sign out """
         # Remove this token from the user
         request.user.delete_token()
         # Logout will remove all session data
@@ -78,7 +84,9 @@ class SignOut(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ChangePassword(generics.UpdateAPIView):
+    """ template view """
     def partial_update(self, request):
+        """ change password """
         user = request.user
         # Pass data through serializer
         serializer = ChangePasswordSerializer(data=request.data['passwords'])

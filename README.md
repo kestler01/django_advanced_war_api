@@ -43,13 +43,13 @@ After V1 features are fully completed on the front end.
 
 #### V1 ScreenShots:
 HomePage
-![advance war home page screenshot](./public/AdvanceWarHomePageScreenShot.jpg)
+![advance war home page screenshot](./docs/AdvanceWarHomePageScreenShot.jpg)
 
 GameHall
-![advance war game hall screenshot](./public/AdvanceWarGameHallScreenShot.jpg)
+![advance war game hall screenshot](./docs/AdvanceWarGameHallScreenShot.jpg)
 
 GameBoard
-![advance war game board screenshot](./public/AdvanceWarGameBoardScreenShot.jpg)
+![advance war game board screenshot](./docs/AdvanceWarGameBoardScreenShot.jpg)
  > due to the size of the screen, the navbar was cut off at the time, it is still at the top of the page in the game board view. 
 
 ---
