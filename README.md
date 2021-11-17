@@ -41,6 +41,11 @@ After V1 features are fully completed on the front end.
 
 ---
 
+#### State Diagram:
+![advance war state diagram](./docs/advanceWarStateDiagram.jpeg)
+
+---
+
 #### V1 ScreenShots:
 HomePage
 ![advance war home page screenshot](./docs/AdvanceWarHomePageScreenShot.jpg)
@@ -63,8 +68,8 @@ sign-up | post
 sign-in | post
 
 Authenticated routes:
-URI Pattern  |	Verb	Verb   | Description
------------- | ------------- | --------------------------
+URI Pattern  |	Verb   | Description
+------------ | --------| --------------------------
 sign-out | delete | deletes user token
 change-pw | patch | takes old password an new one, checks data and stores new hashed password
 games | get | index games, currently only owned games

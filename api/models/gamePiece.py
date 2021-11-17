@@ -35,8 +35,13 @@ class GamePiece(models.Model):  # pylint: disable=too-few-public-methods
     base_attack = models.IntegerField(default=60)
     # base damage mitigation if any
     base_defense = models.IntegerField(default=0)
-    # unit type - potentially to be used with a vs type chart for multipliers ? should use choices and set max length reasonably, current value of 100 is unnecessarily large- alternative is to have this default class be inherited by the other pieces and have them have hard defined values
+    # unit type - potentially to be used with a vs type chart for multipliers ?
+    # should use choices and set max length reasonably,
+    # current value of 100 is unnecessarily large
+    # alternative is to have this default class be inherited by the other pieces
+    # have them have hard defined values
     unit_type = models.CharField(
       default="test",
       max_length=100
     )
+    # need to add a hasActed / moved variable to make sure you can't multi move a piece indefinitely before V3
